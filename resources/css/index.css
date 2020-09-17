@@ -1,0 +1,142 @@
+.yl-apply {
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.yl-apply .apply-head {
+  background-image: linear-gradient(-1deg, #FFFFFF 2%, #85D7FF 12%, #07ADFF 22%, #0A70FC 61%, #0060E5 87%);
+  /* padding-bottom: 45px; */
+}
+.yl-apply .apply-head-bg {
+  padding: 20px 0 10px 0;
+  justify-content: center;
+}
+.yl-apply .apply-head-bg .head-bg {
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 170px;
+  width: 170px;
+  background-image: url('../img/head_qiu.png');
+  background-size: cover;
+  min-height: 170px;
+  background-position: 50% 0px;
+  background-repeat: no-repeat no-repeat;
+}
+.yl-apply .apply-head-bg .icon-shixiao {
+  position: absolute;
+  width: 87px;
+  top: 10px;
+  right: -60px;
+}
+.yl-apply .edu-intro-title {
+  align-items: center;
+}
+.yl-apply .edu-intro-title span{
+  font-size: 14px;
+  color: #ffffff;
+  font-family: PingFangSC-Regular;
+  margin-right: 2px ;
+}
+.yl-apply .edu-intro-title img {
+  display: block;
+  width: 16px;
+}
+.yl-apply .edu-intro-num {
+  font-size: 28px;
+  color: #FFFFFF;
+  letter-spacing: 0.7125px;
+  margin: 10px 0 32px 0;
+}
+.yl-apply .edu-intro-no{
+  color: #76F0FF;
+  font-size: 18px;
+  margin: 15px 0 32px 0;
+}
+.yl-apply .edu-intro-num span{
+  font-size: 16px;
+  color: #ffffff;
+}
+.yl-apply .intro-sx-middle {
+  padding-bottom: 35px;
+}
+.yl-apply .intro-sx-middle p{
+  font-size: 16px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 24px;
+}
+.yl-apply .intro-sx-refuse p{
+  font-size: 16px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 24px;
+}
+.yl-apply .intro-sx-refuse .refuse-text {
+  font-size: 12px;
+  color: #0078FA;
+  letter-spacing: 0.75px;
+  text-align: center;
+  line-height: 22px  ;
+}
+.yl-apply .intro-sx-success {
+  padding-bottom: 20px;
+}
+.yl-apply .intro-sx-success p {
+  font-size: 16px;
+  color: #FFFFFF;
+  text-align: center;
+}
+.yl-apply .intro-sx-success .success-text {
+  font-size: 12px;
+  color: #0078FA;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.yl-apply .other-entrance {
+  justify-content: space-around;
+  margin-top: 32px ;
+  padding: 0 20px;
+}
+.yl-apply .record-entrance {
+  align-items: center;
+}
+.yl-apply .record-entrance img {
+  height: 32px;
+  margin-right: 3px;
+}
+.yl-apply .record-entrance p {
+  font-size: 14px;
+  color: #2B2B39;
+}
+.yl-apply .other-entrance span {
+  color: rgba(0,0,0,0.28);
+}
+.yl-apply .card-entrance {
+  align-items: center;
+}
+.yl-apply .card-entrance img {
+  height: 32px;
+  margin-right: 3px;
+}
+.yl-apply .card-entrance p {
+  font-size: 14px;
+  color: #2B2B39;
+}
+.yl-apply .hyd-logo {
+  flex-direction: column;
+  align-items: center;
+}
+.yl-apply .hyd-logo img {
+  width: 82px;
+  display: block;
+}
+.yl-apply .hyd-logo p{
+  padding: 8px 0 30px 0;
+  font-size: 12px;
+  color: rgba(0,0,0,0.28);
+  letter-spacing: 0;
+  text-align: center;
+}
