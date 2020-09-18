@@ -277,7 +277,7 @@ template {
   -webkit-user-select: auto!important
 }
 
-.wl-wrap {
+.yl-wrap {
   position: relative;
   min-height: 100vh;
   margin: 0 auto
@@ -285,7 +285,7 @@ template {
 
 
 @media only screen and (min-device-width:1080px) {
-  .wl-wrap {
+  .yl-wrap {
     max-width: 750px!important;
     /* border-left: 1px solid #e5e5e5;
     border-right: 1px solid #e5e5e5 */
