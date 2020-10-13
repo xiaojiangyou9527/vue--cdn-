@@ -280,7 +280,8 @@ template {
 .yl-wrap {
   position: relative;
   min-height: 100vh;
-  margin: 0 auto
+  margin: 0 auto;
+  background: #f4f4f4;
 }
 
 
@@ -370,3 +371,68 @@ button:disabled{
   background-image: linear-gradient(-135deg, #1D8AFF 0%, #1D8AFF 53%, #00BDFF 100%);
   background-color: #0078FA;
 }
+
+.mark {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#toast {
+  z-index: 1004;
+  position: fixed;
+  top: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 8px; 
+  width: 270px;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toast_box {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.toast_img {
+  /* width: 2.5rem;
+  height: 2.27rem; */
+  margin-top: 15px;
+}
+
+.toast_img>img {
+  height:125px;
+  display:block;
+}
+
+.toast_close {
+  width: 100%;
+  color: #D8D8D8;
+  
+}
+
+.toast_close>img {
+  width: 15px;
+  display:block;
+  float: right;
+}
+
+.toast_word {
+  text-align: center;
+  color: #333;
+  padding: 30px 0 15px 0;
+}
+

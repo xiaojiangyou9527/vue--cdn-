@@ -1,250 +1,194 @@
+//提示信息
+var _toast;
+var _toastTrue;
+$.showError = function (text) {
+  $('body').append('<div id="toast"><div class="toast_box"><p class="toast_close"><img src="/resources/img/close.png" /></p><p class="toast_img"><img src="/resources/img/unsusscss_icon.png" /></p><p class="toast_word">' + text + '</p></div></div><div class="mark"></div>');
+  _toast = $('#toast');
+  _toast.show();
+  $('.toast_close img').on('click', function () {
+    $(this).parents("#toast").next(".mark").remove();
+    $(this).parents("#toast").remove();
+  });
+  // $('.mark').on('click', function () {
+  //   $(this).prev("#toast").remove();
+  //   $(this).remove();
+  // });
+};
+$.showTrue = function (text) {
+  var timers;
+  $('body').append('<div id="toast"><div class="toast_box"><p class="toast_close"><img src="/resources/img/close.png" /></p><p class="toast_img"><img src="/resources/img/susscss.png" /></p><p class="toast_word">' + text + '</p></div></div><div class="mark"></div>');
+  _toastTrue = $('#toast');
+  if(timers) clearTimeout(timers);
+  _toastTrue.show();
+  timers = setTimeout(hide, 2000);
+};
+//提示信息，重新加载页面
+var _toast_reload;
+$.showErrorReload = function (text) {
+  $('body').append('<div id="toast">' + '<div class="toast_box">' + '<p class="toast_close">' + '<img src="/resources/img/close.png" /></p>' + '<p class="toast_img"><img src="/resources/img/warn_circle.png" /></p>' + '<p class="toast_word">' + text + '</p></div></div>' + '<div class="mark"></div>');
+  _toast_reload = $('#toast');
+  _toast_reload.show();
+  $('.mark,.toast_close img').on('click', function () {
+    $(this).parents("#toast").remove();
+    $('.mark').remove();
+    document.location.reload();
+  });
+};
+/*
+* 加载中
+* loading.show()展示
+* loading.hide()隐藏
+*/
+var Loading = function Loading() {
+  this.show = function () {
+  $('body').append($('<div class="loadingImg">').append(
+    $('<div id="vue-loading" style="position: fixed;top: 0;right: 0;bottom:0;left: 0;z-index: 1000;display: flex;justify-content: center;align-items: center;padding-bottom: 120px;background: rgba(0,0,0,.08);"><img src="/resources/img/loading.gif" style="height: 50px"></div>'))).append('<div class="pop_layer_transpernt"></div>');
+  }, 
+  this.hide = function () {
+    $('.loadingImg, .pop_layer_transpernt').remove();
+  };
+};
+var loading = new Loading();
+//获取sessionStorage中的token信息
+var getToken = function getToken() {
+  return getProp('token');
+};
+//设置sessionStorage中的token信息
+var setToken = function setToken(token) {
+  if (!token) return
+  var token = token.replace(/(\n)/g, "");
+  setProp('token', token);
+};
+//检查sessionStorage中是否有token信息
+var checkToken = function checkToken() {
+  var token = getToken();
+  if(!token){
+    return false;
+  }else{
+    return true;
+  }
+};
+//清除sessionStorage
+var removeProp = function removeProp(name) {
+  if(window.sessionStorage){
+    window.sessionStorage.removeItem(name);
+  }else{
+    Cookies.remove(name);
+  }
+};
 
+//获取sessionStorage
+var getProp = function getProp(name) {
+  var value;
+  if(window.sessionStorage){
+    value = window.sessionStorage.getItem(name);
+  }else{
+    value = Cookies.get(name);
+  }
+  return value;
+};
+//设置sessionStorage
+var setProp = function setProp(name, value) {
+  if(window.sessionStorage){
+      window.sessionStorage.setItem(name, value);
+  }else{
+      Cookies.set(name, value);
+  }
+};
 // 请求出理
+var interUrl = 'https://fsp.yillionbank.com:16630/api/';
+$.ajaxSetup({
+  timeout: 300000,
+  processData: false,
+  crossDomain: true,
+  formDate: 'b',
+  beforeSend: function beforeSend() {
+    if (this.formDate == 'a') {
+        this.contentType = 'multipart/form-data; charset=UTF-8;';
+    } else if (this.formDate == 'b') {
+        this.contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+    }
+    if (this.formatUrl != false) {
+      this.url = interUrl + this.url;
+      var TRANS_CODE = this.url.split("api/")[1];
+      var headerData = {
+        "TRANS_CODE": TRANS_CODE,
+        "SDKType": "H5",
+        "tokenType": "Once",
+        "appAccessToken": ""
+      };
+      if(getToken() == null){
+        headerData.appAccessToken = getProp("appAccessToken");
+      }else{
+        headerData.appAccessToken = getToken();
+      }
+      var formdata = this.data;
+      this.data = headerData;
+      this.data.data = formdata;
+      console.log(this.data);
+    } else {
+      if (this.url.indexOf('face') != -1) {
+        this.url = this.url;
+      }
+      this.url = interUrl + this.url;
+    }
+    if (this.encryptData != false && this.data) {
+      var json = JSON.stringify(this.data);
+      var params = {};
+      var K1 = btoa(dx.encrypt(json));
+      var K2 = md5(K1 + K1.slice(0, 2) + K1.charAt(K1.length / 2) + K1.slice(-2));
+      params.K1 = K1;
+      params.K2 = K2;
+      this.data = JSON.stringify(params);
+    }
+  },
+  dataFilter: function dataFilter(data) {
+    if (this.encryptData != false) {
+      data = $.isPlainObject(data) ? data : $.parseJSON(data);
+      
+      if (!data.status && data.K1) {
+        var K1 = data.K1;
+        var K2 = data.K2;
+        var sign = md5(K1 + K1.slice(0, 2) + K1.charAt(K1.length / 2) + K1.slice(-2));
+        if (K2 == sign) {
+          data = dx.decrypt(atob(K1));
+          console.log(JSON.parse(data));
+          setToken(JSON.parse(data).data.appAccessToken);
+          return data;
+        }
+        return null
+      } else {
+        console.log(data)
+      }
+    }
+    return data;
+  },
+  error: function error(xhr, status, _error) {
+    loading.hide();
+    $.showError('系统繁忙，请稍候重试');
+  }
+});
+
 var ajax = {
   post: function (url, data, callback, complete) {
-    var headers = {
-      'Content-Type': 'application/json;charset=UTF-8',
-      // 'clientId': window.version,
-      // 'jwt': jwt
-    }
-    // if (url.indexOf(gatewayUrl) === -1) {
-    //   data.uid = storage.getItem('account.uid');
-    //   headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-    // }
     $.ajax({
       type: 'POST',
-      timeout: 10000,
       url: url,
       data: data,
-      headers: headers,
       dataType: 'json',
       success: function (res) {
         callback && callback(res);
-      },
-      error: function (xhr, errorType, err) {
-        if (errorType == 'timeout') {
-          overlay({
-            icon: 'warn',
-            text: '请求超时'
-          });
-        }
-        console.error(err);
-      },
-      complete: function (xhr, status) {
-        complete && complete();
       }
     })
   },
   get: function (url, callback) {
-    var headers = {
-      'Content-Type': 'application/json;charset=UTF-8',
-      // 'clientId': window.version,
-      // 'jwt': jwt
-    }
-    // if (url.indexOf(gatewayUrl) === -1) {
-    //   data.uid = storage.getItem('account.uid');
-    //   headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-    // }
     $.ajax({
       type: 'GET',
-      timeout: 5000,
       url: url,
-      headers: headers,
       dataType: 'json',
       success: function (res) {
         callback && callback(res);
-      },
-      error: function (xhr, errorType, err) {
-        if (errorType == 'timeout') {
-          overlay({
-            icon: 'warn',
-            text: '请求超时'
-          });
-        }
-        console.error(err);
       }
     })
   }
-};
-
-/**
- * 指令loading
- */
-Vue.prototype.$loading = {
-  show: function () {
-    // 如果页面有loading则不继续执行
-    if (document.querySelector('#vue-loading')) return
-    // 1、创建构造器，定义loading模板
-    var LoadingTip = Vue.extend({
-      template: `<div id="vue-loading" style="position: fixed;top: 0;right: 0;bottom:0;left: 0;z-index: 1000;display: flex;justify-content: center;align-items: center;padding-bottom: 120px;background: rgba(0,0,0,.08);"><img src="/resources/img/loading.gif" style="height: 50px"></div>`
-    })
-    // 2、创建实例，挂载到文档以后的地方
-    var tpl = new LoadingTip().$mount().$el
-    // 3、把创建的实例添加到body中
-    document.body.appendChild(tpl)
-    // 阻止遮罩滑动
-    document.querySelector('#vue-loading').addEventListener('touchmove', function (e) {
-      e.stopPropagation()
-      e.preventDefault()
-    })
-  },
-  hide: function() {
-    var tpl = document.querySelector('#vue-loading')
-    if (!tpl) return
-    document.body.removeChild(tpl)
-  }
-}
-/**
- * 指令toast
- */
-var toastVMStatus = false
-Vue.prototype.$toast = function ({type, msg, ...other}) {
-  // 如果页面有loading则不继续执行
-  if (toastVMStatus) return
-  toastVMStatus = true
-  // 1、创建构造器，定义loading模板
-  var toastTpl = Vue.extend({
-    template: `<div id="vue-taost" style="z-index: 1000; position: fixed;top: 0;right: 0;bottom: 0;left: 0;background: rgba(0, 0, 0, .08);display: flex;justify-content: center;align-items: center;">
-      <div style="padding: 10px;background: #ffffff;border-radius: 8px; width: 270px;display:flex;flex-direction: column;align-items: center;">
-        <div style="padding-bottom: 15px;display:flex;justify-content: space-between;width: 100%">
-          <span></span>
-          <img style="width: 15px;display:block" src="/resources/img/close.png" @click="toastClick">
-        </div>
-        <img style="height:125px;display:block" :src="'/resources/img/' + iconType + '.png'">
-        <p style="text-align: center;color: #333;padding: 30px 0 15px 0;">{{msg}}</p>
-      </div>
-    </div>`,
-    data: function () {
-      return {
-        msg: msg || '',
-        iconType: type || 'success'
-      }
-    },
-    methods: {
-      toastClick () {
-        var tpl = document.querySelector('#vue-taost')
-        if (!tpl) return
-        toastVMStatus = false
-        document.body.removeChild(tpl)
-      }
-    }
-  })
-  // 2、创建实例，挂载到文档以后的地方
-  var toastVM = new toastTpl();
-  var tpl = toastVM.$mount().$el;
-  document.body.appendChild(tpl);
-  // 阻止遮罩滑动
-  document.querySelector('#vue-taost').addEventListener('touchmove', function (e) {
-    e.stopPropagation()
-    e.preventDefault()
-  })
-}
-// 业务功能页面
-window.onload = function() {
-  'use strict';
-  
-  var jumpPage = {
-    template: '#jump-template',
-    data: function() {
-      return {
-        invest: 'Hellow World!'
-      }
-    },
-    methods: {
-    },
-    created: function() {
-    }
-  };
-
-  var applyPage = {
-    template: '#apply-template',
-    data: function() {
-      return {
-        invest: 'Hellow World!'
-      }
-    },
-    methods: {
-      btnClick() {
-        // this.$router.push('/borrow')
-        this.$toast({
-          type: 'success',
-          msg: '成功！'
-        })
-      }
-    },
-    created: function() {
-    }
-  };
-
-  var borrowPage = {
-    template: '#borrow-template',
-    data: function() {
-      return {
-      }
-    },
-    methods: {
-    },
-    created: function() {
-    }
-  }
-
-  var errorPage = {
-    template: '#error-template',
-    data: function() {
-      return {
-      }
-    },
-  };
-  // 路由配置
-  var _routes = [
-    {
-      path: '/',
-      component: jumpPage
-      // redirect: '/404'
-    },{
-      path: '/apply',
-      component: applyPage
-    },{
-      path: '/borrow',
-      component: borrowPage
-    },
-    
-    
-    {
-      path: '/404',
-      component: errorPage
-      // redirect: '/404'
-    }
-  ];
-  // 创建路由
-  var _router = new VueRouter({
-    scrollBehavior: function (to, from, savedPosition) {
-      return { x: 0, y: 0 }
-    },
-    routes: _routes
-  });
-
-  _router.beforeEach (function (to, from, next) {
-    next();
-    // if (!to.meta.skipAuth) {
-    //   if (!jwt) {
-    //     location.reload()
-    //   } else {
-    //     next();
-    //   }
-    // } else {
-    //   next();
-    // }
-  });
-
-  Vue.prototype.$appName = 'My App'
-  // 创建vue实例
-  var createVue = function () {
-    new Vue({
-      delimiters: ['[[', ']]'],
-      router: _router,
-      componentName: 'app'
-    }).$mount('#app');
-  };
-  createVue();
 };
