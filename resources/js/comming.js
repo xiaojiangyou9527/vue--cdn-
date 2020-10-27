@@ -95,6 +95,31 @@ var setProp = function setProp(name, value) {
       Cookies.set(name, value);
   }
 };
+
+/*
+  * 验证字符串是否是整数串
+  * sText String
+  * return Boolen
+*/
+var isNumeric = function isNumeric(sText) {
+  var ValidChars = "0123456789";
+  var IsNumber = true;
+  var Char;
+  if (isNaN(sText)) {
+    IsNumber = false;
+  } else {
+    for (var i = 0; i < sText.length && IsNumber == true; i++) {
+      Char = sText.charAt(i);
+      if (ValidChars.indexOf(Char) == -1) {
+        IsNumber = false;
+      }
+    }
+    if (String(parseInt(sText)).length < String(sText).length) {
+      IsNumber = false;
+    }
+  }
+  return IsNumber;
+};
 // 请求出理
 var interUrl = 'https://fsp.yillionbank.com:16630/api/';
 $.ajaxSetup({

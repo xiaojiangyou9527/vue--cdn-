@@ -7,9 +7,9 @@
       <div class="flex info">
         <div class="flex">
           <span>￥</span>
-          <input type="text" placeholder="最低贷款额度100元">
+          <input v-model="withDrawamt" type="tel" placeholder="最低贷款额度500元" @blur="blurWithDrawamt">
         </div>
-        <img src="/resources/img/del_icon.png">
+        <img src="/resources/img/del_icon.png" @click="delWithDrawamt">
       </div>
       <p class="intro">随借随还，按日计息，日利率低至0.037%</p>
     </div>
@@ -58,7 +58,7 @@
       <p>本人已阅读并同意签署<span class="info-rukou">《个人借款借据》</span>同意报送贷款相关信息之人行征信系统</p>
     </div>
     <div class="yl-borrow-foot">
-      <button>下一步</button>
+      <button @click="saveAgain">下一步</button>
     </div>
     <!-- 了解您的年化利率组成 -->
     <van-popup 
@@ -86,5 +86,7 @@
     <yl-borrow-use :borrowUse="borrowUse" @editBorrowUse="editBorrowUse"></yl-borrow-use>
     <!-- 银行卡列表 -->
     <yl-back-card :backCard="backCard"></yl-back-card>
+    <!-- 发送验证短信 -->
+    <yl-send-code :sendCode="sendCode" @saveSendCode="saveSendCode"></yl-send-code>
   </div>
 </script>

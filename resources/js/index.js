@@ -5,7 +5,7 @@ Vue.prototype.$loading = {
   show: function () {
     if (document.querySelector('#vue-loading')) return
     var LoadingTip = Vue.extend({
-      template: `<div id="vue-loading" style="position: fixed;top: 0;right: 0;bottom:0;left: 0;z-index: 1000;display: flex;justify-content: center;align-items: center;padding-bottom: 120px;background: rgba(0,0,0,.08);"><img src="/resources/img/loading.gif" style="height: 50px"></div>`
+      template: `<div id="vue-loading" style="position: fixed;top: 0;right: 0;bottom:0;left: 0;z-index: 99999;display: flex;justify-content: center;align-items: center;padding-bottom: 120px;background: rgba(0,0,0,.08);"><img src="/resources/img/loading.gif" style="height: 50px"></div>`
     })
     var tpl = new LoadingTip().$mount().$el
     document.body.appendChild(tpl)
@@ -28,7 +28,7 @@ Vue.prototype.$toast = function ({iconType , msg, ...other}) {
   if (toastVMStatus) return
   toastVMStatus = true
   var toastTpl = Vue.extend({
-    template: `<div id="vue-taost" style="z-index: 1000; position: fixed;top: 0;right: 0;bottom: 0;left: 0;background: rgba(0, 0, 0, .2);display: flex;justify-content: center;align-items: center;">
+    template: `<div id="vue-taost" style="z-index: 99999; position: fixed;top: 0;right: 0;bottom: 0;left: 0;background: rgba(0, 0, 0, .2);display: flex;justify-content: center;align-items: center;">
       <div style="padding: 10px;background: #ffffff;border-radius: 8px; width: 270px;display:flex;flex-direction: column;align-items: center;">
         <div style="padding-bottom: 15px;display:flex;justify-content: space-between;width: 100%">
           <span></span>
@@ -144,6 +144,60 @@ Vue.component('yl-borrow-time', {
     }
   }
 });
+// 发送验证码
+Vue.component('yl-send-code', {
+  template: '#yl-send-code-template',
+  props: {
+    sendCode: {
+      type: Object,
+      default: {}
+    }
+  },
+  data:function () {
+    return {
+      btnText: '发送验证码',
+      disabled: false,
+      code: ''
+    }
+  },
+  methods: {
+    getSendCode () {
+      this.disabled = true
+      var timer = null;
+      var count = 5;
+      if (this.btnText == '发送验证码' || this.btnText == '重新发送') {
+        var _self = this
+        timer = setInterval(function(){
+          console.log(count)
+          count--;
+          _self.btnText = '重新发送' + count + 's';
+          if (count <=0) {
+            clearInterval(timer);
+            _self.btnText = '重新发送';
+            _self.disabled = false
+          }
+        },1000);
+      }
+    },
+    saveSendCode () {
+      if (this.btnText == 'btnText' ) {
+        this.$toast({
+          type: 'error',
+          msg: '请获取验证码！'
+        })
+        return
+      }
+      if (!this.code) {
+        this.$toast({
+          type: 'error',
+          msg: '请填写验证码！'
+        })
+        return
+      }
+      this.$emit('saveSendCode')
+    }
+  }
+});
 
 // 业务功能页面
 window.onload = function() {
@@ -152,12 +206,19 @@ window.onload = function() {
     template: '#jump-template',
     data: function() {
       return {
-        invest: 'Hellow World!'
       }
     },
     methods: {
     },
-    created: function() {
+    mounted: function() {
+      this.$loading.show()
+      var _self = this
+      setTimeout(function () {
+        _self.$router.replace('/apply')
+      }, 2000)
+    },
+    destroyed: function() {
+      this.$loading.hide()
     }
   };
 
@@ -189,14 +250,14 @@ window.onload = function() {
       }
     },
     created: function() {
-    },
-    
+    }
   };
 
   var borrowPage = {
     template: '#borrow-template',
     data: function() {
       return {
+        withDrawamt: '',
         understandRate: { //了解年化利率
           visible: false,
         },
@@ -216,10 +277,22 @@ window.onload = function() {
           id: null,
           name: '' 
         },
+        sendCode: {
+          visible: false,
+        },
         signChecked: false //签署勾选
       }
     },
+    watch: {
+      withDrawamt (val) {
+        // console.log(val)
+      }
+    },
     methods: {
+      // 下一步操作
+      saveAgain () {
+        this.sendCode.visible = true
+      },
       editBorrowUse (item) {
         this.borrowUse.visible = false
         this.borrowUse.id = item.id
@@ -229,6 +302,39 @@ window.onload = function() {
         this.borrowTime.visible = false
         this.borrowTime.id = item.id
         this.borrowTime.name = item.name
+      },
+      blurWithDrawamt () {
+        var val = String(this.withDrawamt)
+        if (val) {
+          if (!isNumeric(val)) {
+            this.$toast({
+              type: 'error',
+              msg: '请输入合法的借款金额！'
+            })
+            this.withDrawamt = ''
+            return
+          }
+          if (val && val % 100 != 0) {
+            this.$toast({
+              type: 'error',
+              msg: '请输入100的整数倍金额！'
+            })
+            return
+          }
+          if (val && !Number(500) || val && val < Number(500)) {
+            this.$toast({
+              type: 'error',
+              msg: '最低借款金额500元起！'
+            })
+            return
+          }
+        }
+      },
+      delWithDrawamt () {
+        this.withDrawamt = ''
+      },
+      saveSendCode () {
+        this.sendCode.visible = false
       }
     },
     created: function() {

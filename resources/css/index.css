@@ -249,7 +249,7 @@ color: #ccc;
   top: 2px;
 }
 .yl-borrow .yl-borrow-info p {
-  padding-left: 40px;
+  padding: 0 20px 0 40px;
   color: rgba(0,0,0,0.40);
 }
 .yl-borrow .yl-borrow-info .info-rukou {
@@ -457,4 +457,35 @@ color: #ccc;
 }
 .yl-back-card-dialog .use-list li:last-child {
   border-bottom: 0px solid #e5e5e5;
+}
+.yl-send-code-dialog {
+  padding-top: 20px;
+}
+.yl-send-code-dialog .title{
+  font-size: 18px;
+  color: #4A4A4A;
+  padding: 0 20px;
+}
+.yl-send-code-dialog .intro {
+  font-size: 14px;
+  color: #4A4A4A;
+  margin-top: 4px;
+  padding: 0 20px;
+}
+.yl-send-code-dialog .send-code-input {
+  padding: 15px 20px;
+  margin: 15px 0;
+}
+.yl-send-code-dialog .send-code-input::after {
+  border-bottom: 0px solid #ebedf0;
+}
+.yl-send-code-dialog .send-code-input .van-cell__value {
+  border: 1px solid #e5e5e5;
+  padding-left: 8px;
+}
+.yl-send-code-dialog .send-code-input .van-button--info {
+  border: 0px;
+}
+.yl-send-code-dialog .bottom-btn .van-button--info {
+  width: 100%;
 }
